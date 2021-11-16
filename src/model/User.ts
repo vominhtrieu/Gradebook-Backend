@@ -24,7 +24,7 @@ export const User = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, {underscored: true});
 
 export async function registerUser(user: any): Promise<any> {
     user.password = bcrypt.hashSync(user.password, 10);

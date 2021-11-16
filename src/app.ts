@@ -65,5 +65,8 @@ app.listen(process.env.PORT, () => {
         .then((err: any) => {
             console.log(`Server is listening at PORT ${process.env.PORT}`);
         })
-        .catch(() => console.log("Cannot sync database!"));
+        .catch((err) => {
+            console.log("Cannot sync database!")
+            console.log(err);
+        });
 });

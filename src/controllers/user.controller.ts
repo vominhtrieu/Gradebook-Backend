@@ -5,8 +5,12 @@ import { getClassroomsByTeacherId } from "../model/Classroom";
 export const getProfileHandler = async (req: Request, res: Response) => {
     try {
         const userData = req.headers["userData"] as any;
-        const user = await getUserById(userData.id);
-        const classrooms = await getClassroomsByTeacherId(userData.id);
+        let id = userData.id;
+        if (req.query.id) {
+            id = req.query.id;
+        }
+        const user = await getUserById(id);
+        const classrooms = await getClassroomsByTeacherId(userData.id, userData.id);
         const classroomCount = classrooms.length;
         if (user !== null) {
             res.json({

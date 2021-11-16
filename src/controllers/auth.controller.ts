@@ -26,6 +26,7 @@ export const signUpHandler = async (req: Request, res: Response) => {
     try {
         const user = await registerUser(req.body);
         if (user !== null) {
+            delete user.password;
             res.json(user);
             return;
         }
