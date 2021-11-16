@@ -25,7 +25,7 @@ app.use(
         extended: true,
     })
 );
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({limit: "1mb"}));
 app.use(cors());
 app.use((_: Request, res, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -37,18 +37,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"];
     if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader?.substr(7);
-        jwt.verify(token, process.env.TOKEN_SECRET as string, async (err: any, decoded: any) => {
-            if (err) {
-                res.sendStatus(401);
-            } else {
-                if (await getUserById(decoded.id)) {
-                    req.headers["userData"] = decoded;
-                    next();
-                } else {
+        jwt.verify(
+            token,
+            process.env.TOKEN_SECRET as string,
+            async (err: any, decoded: any) => {
+                if (err) {
                     res.sendStatus(401);
+                } else {
+                    if (await getUserById(decoded.id)) {
+                        req.headers["userData"] = decoded;
+                        next();
+                    } else {
+                        res.sendStatus(401);
+                    }
                 }
             }
-        });
+        );
     } else {
         res.sendStatus(401);
     }
@@ -61,7 +65,7 @@ if (!fs.existsSync("./public")) {
 
 app.listen(process.env.PORT, () => {
     sequelize
-        .sync({ alter: true })
+        .sync({alter: true})
         .then((err: any) => {
             console.log(`Server is listening at PORT ${process.env.PORT}`);
         })
