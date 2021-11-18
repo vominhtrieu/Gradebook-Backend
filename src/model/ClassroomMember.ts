@@ -4,18 +4,28 @@ import { User } from "./User";
 import { now } from "sequelize/types/lib/utils";
 
 export const ClassroomMember = sequelize.define("classroom_member", {
-    userId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-    },
-    classroomId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-    },
-    role: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-}, {underscored: true});
+            userId: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+            },
+            classroomId: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+            },
+            role: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
+            },
+        }, {
+            underscored: true,
+            indexes: [
+                {
+                    unique: true,
+                    fields: ['user_id', 'classroom_id']
+                }
+            ]
+        }
+    )
+;
 
 ClassroomMember.belongsTo(User, {foreignKey: "userId"});

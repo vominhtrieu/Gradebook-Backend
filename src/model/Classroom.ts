@@ -1,5 +1,5 @@
 import { sequelize } from "./db";
-import { DataTypes, QueryTypes } from "sequelize";
+import { DataTypes, Op, QueryTypes } from "sequelize";
 import fs from "fs";
 import randomstring from "randomstring";
 import * as util from "util";
@@ -66,29 +66,26 @@ export async function createClassroom(userId: number, classroom: any): Promise<a
 }
 
 export async function getClassroomDetailByCode(studentInvitationCode: any, teacherInvitationCode: any, userId: any): Promise<any> {
+    const condition = []
+    if (studentInvitationCode && studentInvitationCode.length > 0) {
+        condition.push({
+            studentInvitationCode: studentInvitationCode
+        });
+    } else {
+        condition.push({
+            teacherInvitationCode: teacherInvitationCode
+        });
+    }
     const data = await Classroom.findOne({
         where: {
-            $or: [
-                {
-                    studentInvitationCode:
-                        {
-                            $eq: studentInvitationCode
-                        }
-                },
-                {
-                    teacherInvitationCode:
-                        {
-                            $eq: teacherInvitationCode
-                        }
-                },
-            ]
+            [Op.or]: condition
         },
         include: [{
             model: ClassroomMember,
             include: [User],
         }],
     })
-    return getClassroomsData(data, userId);
+    return getClassroomData(data, userId);
 }
 
 export async function getClassroomDetailById(code: any, userId: any): Promise<any> {

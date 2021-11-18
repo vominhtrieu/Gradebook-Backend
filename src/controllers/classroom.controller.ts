@@ -17,8 +17,11 @@ export const enrollClassroomHandler = async (req: Request, res: Response) => {
         } else if (req.body.teacherInvitationCode && req.body.teacherInvitationCode.length > 0) {
             type = 2;
         }
+        if (type === 0) {
+            return res.status(400).json("Invalid code!");
+        }
         const classroom = await getClassroomDetailByCode(req.body.studentInvitationCode, req.body.teacherInvitationCode, user.id);
-        if (type === 0 || classroom !== null) {
+        if (classroom === null) {
             return res.status(400).json("Invalid code!")
         }
         const classroomMember = await enrollClassroom(user.id, classroom.id, type);
