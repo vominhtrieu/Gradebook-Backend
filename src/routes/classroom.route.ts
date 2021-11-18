@@ -1,13 +1,15 @@
 import express from "express";
 import {
-    getClassroomHandler,
+    getClassroomDetailHandler,
+    getAllClassroomsHandler,
     createClassroomHandler,
     enrollClassroomHandler
 } from "../controllers/classroom.controller";
 const router = express.Router();
 
-router.post("/enroll", enrollClassroomHandler);
-router.get("/", getClassroomHandler)
+router.post("/:id/enroll", enrollClassroomHandler);
+router.get("/:id", getClassroomDetailHandler);
+router.get("/", getAllClassroomsHandler)
 router.post("/", createClassroomHandler);
 
 export default router;

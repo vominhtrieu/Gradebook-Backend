@@ -18,4 +18,4 @@ export const ClassroomMember = sequelize.define("classroom_member", {
     },
 }, {underscored: true});
 
-ClassroomMember.belongsTo(User, {foreignKey: "user_id"});
+ClassroomMember.belongsTo(User, {foreignKey: "userId"});
