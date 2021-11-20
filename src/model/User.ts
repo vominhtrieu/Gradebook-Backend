@@ -2,29 +2,39 @@ import { sequelize } from "./db";
 import bcrypt from "bcrypt";
 import Model, { DataTypes } from "sequelize";
 
-export const User = sequelize.define("user", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+export const User = sequelize.define(
+  "user",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    avatar: {
+      type: DataTypes.STRING,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    external_type: {
+      type: DataTypes.STRING,
+    },
+    external_id: {
+      type: DataTypes.STRING,
+    },
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-  avatar: {
-    type: DataTypes.STRING,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-}, {underscored: true});
+  { underscored: true }
+);
 
 export async function registerUser(user: any): Promise<any> {
   user.password = bcrypt.hashSync(user.password, 10);
@@ -58,6 +68,57 @@ export async function signUserIn(
     return user;
   }
   return null;
+}
+
+export async function googleSignUserIn(
+  externalType: string,
+  externalId: string,
+  email: string,
+  name: string
+): Promise<any> {
+  const data = await User.findOne({
+    where: {
+      external_type: externalType,
+      external_id: externalId,
+    },
+  });
+
+  if (data === null) {
+    const password = bcrypt.hashSync(externalId, 10);
+
+    try {
+      const result = await User.create({
+        name,
+        email,
+        password,
+        external_type: externalType,
+        external_id: externalId,
+      });
+      return result.toJSON();
+    } catch (err) {
+      return null;
+    }
+  } else {
+    const user = <any>data.toJSON();
+
+    try {
+      await User.update(
+        {
+          name,
+          email,
+        },
+        {
+          where: {
+            id: user.id,
+          },
+        }
+      );
+
+      return { ...user, name, email };
+    } catch {
+      return null;
+    }
+  }
 }
 
 export async function getUserById(id: any): Promise<any> {
