@@ -24,6 +24,7 @@ jobs:
 
     steps:
     - name: Deploy node server
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
