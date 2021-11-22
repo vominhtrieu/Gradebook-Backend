@@ -2,9 +2,11 @@ import express from "express";
 import {
   getNameHandler,
   getProfileHandler,
+  getStudentIdHandler,
   updateAvatarHandler,
   updateNameHandler,
   updatePasswordHandler,
+  updateStudentIdHandler,
 } from "../controllers/user.controller";
 import multer from "multer";
 
@@ -21,7 +23,9 @@ const storage = multer.diskStorage({
 const uploader = multer({ storage: storage });
 
 router.get("/profile", getProfileHandler);
+router.get("/profile/studentId", getStudentIdHandler);
 router.get("/profile/name", getNameHandler);
+router.post("/profile/studentId", updateStudentIdHandler);
 router.post("/profile/name", updateNameHandler);
 router.post("/profile/password", updatePasswordHandler);
 router.post("/avatar", uploader.single("avatar"), updateAvatarHandler);

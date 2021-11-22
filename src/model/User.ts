@@ -10,6 +10,9 @@ export const User = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    student_id: {
+      type: DataTypes.STRING,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -142,6 +145,27 @@ export async function updateUserAvatar(id: any, avatar: string): Promise<any> {
     const result = await User.update(
       {
         avatar: avatar,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+export async function updateUserStudentId(
+  id: any,
+  studentId: string
+): Promise<any> {
+  try {
+    const result = await User.update(
+      {
+        student_id: studentId,
       },
       {
         where: {

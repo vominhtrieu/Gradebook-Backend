@@ -4,8 +4,24 @@ import {
   updateUserAvatar,
   updateUserName,
   updateUserPassword,
+  updateUserStudentId,
 } from "../model/User";
 import { getClassroomsByTeacherId } from "../model/Classroom";
+
+export const getStudentIdHandler = async (req: Request, res: Response) => {
+  try {
+    const userData = req.headers["userData"] as any;
+    const user = await getUserById(userData.id);
+    if (user !== null) {
+      res.json({
+        studentId: user.student_id,
+      });
+      return;
+    }
+  } catch (err) {
+    res.status(400).json("Some thing went wrong!");
+  }
+};
 
 export const getNameHandler = async (req: Request, res: Response) => {
   try {
@@ -40,6 +56,18 @@ export const getProfileHandler = async (req: Request, res: Response) => {
       return;
     }
     res.status(400).json("User not found!");
+  } catch (err) {
+    res.status(400).json("Something went wrong!");
+  }
+};
+
+export const updateStudentIdHandler = async (req: Request, res: Response) => {
+  try {
+    const userData = req.headers["userData"] as any;
+    const result = await updateUserStudentId(userData.id, req.body.studentId);
+    if (result.length > 0) {
+      return res.json({ studentId: result.student_id });
+    }
   } catch (err) {
     res.status(400).json("Something went wrong!");
   }
