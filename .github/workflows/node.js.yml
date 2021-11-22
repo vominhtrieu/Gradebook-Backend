@@ -26,4 +26,4 @@ jobs:
           cd ~/Gradebook-Backend
           sudo git pull origin master
           sudo npm install
-          sudo pm2 restart ./src/app.ts
+          pm2 restart ./src/app.ts
