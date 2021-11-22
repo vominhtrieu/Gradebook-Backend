@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import nodemailer from "nodemailer";
 import {
     createClassroom,
     getClassroomDetailById,
@@ -7,6 +8,17 @@ import {
     getClassroomDetailByCode
 } from "../model/Classroom";
 import { enrollClassroom } from "../model/Classroom";
+import { checkValidTeacher } from "../model/ClassroomMember";
+import getMailContent from "./mailContent";
+import { getUserById } from "../model/User";
+
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD,
+    },
+});
 
 export const enrollClassroomHandler = async (req: Request, res: Response) => {
     try {
@@ -81,5 +93,38 @@ export const createClassroomHandler = async (req: Request, res: Response) => {
         res.status(400).json("Failed to create classroom!")
     } catch (err: any) {
         res.status(400).json("Failed to create classroom!")
+    }
+};
+
+export const sendInviteLinkHandler = async (req: Request, res: Response) => {
+    try {
+        const user = req.headers["userData"] as any;
+
+        req.body.teacherId = user.id;
+        const userData: any = await getUserById(user.id);
+        const valid = await checkValidTeacher(req.body.classroomId, user.id);
+        if (!valid) {
+            return res.sendStatus(400);
+        }
+        const classroom = await getClassroomDetailById(req.body.classroomId, user.id);
+
+        let inviteLink = `${process.env.CLIENT_HOST}/classrooms/${classroom.id}?`;
+        inviteLink += req.body.role == "teacher" ? `teacherInvitationCode=${classroom.teacherInvitationCode}` :
+            `studentInvitationCode=${classroom.studentInvitationCode}`
+        if (classroom.id > 0) {
+            transporter.sendMail({
+                from: `Gradebook System <${process.env.EMAIL_ACCOUNT}>`,
+                to: req.body.email,
+                subject: "Classroom invitation",
+                html: getMailContent(userData.name, inviteLink, req.body.role, classroom.name),
+            }).then(() => {
+                res.sendStatus(200);
+            }).catch((err) => {
+                console.log(err);
+                res.sendStatus(400);
+            })
+        }
+    } catch (err: any) {
+        return res.sendStatus(400);
     }
 };
