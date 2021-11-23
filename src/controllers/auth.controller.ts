@@ -18,6 +18,7 @@ export const signInHandler = async (req: Request, res: Response) => {
         process.env.TOKEN_SECRET + ""
       );
       res.json({
+        studentId: user.student_id,
         email: user.email,
         name: user.name,
         token: token,
@@ -47,6 +48,7 @@ export const googleSignInHandler = async (req: Request, res: Response) => {
         process.env.TOKEN_SECRET + ""
       );
       return res.json({
+        studentId: user.student_id,
         email: user.email,
         name: user.name,
         token: token,
