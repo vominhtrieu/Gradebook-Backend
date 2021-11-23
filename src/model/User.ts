@@ -43,6 +43,7 @@ export async function registerUser(user: any): Promise<any> {
   user.password = bcrypt.hashSync(user.password, 10);
   try {
     const result = await User.create({
+      student_id: user.studentId,
       name: user.name,
       email: user.email.toLowerCase(),
       password: user.password,
