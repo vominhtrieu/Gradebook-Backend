@@ -52,6 +52,7 @@ export const getProfileHandler = async (req: Request, res: Response) => {
                 avatar: user.avatar,
                 joinedDate: user.createdAt,
                 classroomCount: classroomCount,
+                passwordPresent: user.password.length > 0,
             });
             return;
         }

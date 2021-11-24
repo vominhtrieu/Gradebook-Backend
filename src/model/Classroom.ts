@@ -102,10 +102,13 @@ export async function getClassroomDetailByCode(
 }
 
 export async function getClassroomDetailById(
-    code: any,
+    id: any,
     userId: any
 ): Promise<any> {
     const data = await Classroom.findOne({
+        where: {
+            id: id,
+        },
         include: [
             {
                 model: ClassroomMember,

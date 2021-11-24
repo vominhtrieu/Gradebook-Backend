@@ -90,7 +90,7 @@ export default function (sender: string, invitationLink: string, role: string, c
                         <tbody>
                             <tr>
                             <td style="text-align: center">
-                                If you have problems with the button abouve, <br />
+                                If you have problems with the button above, <br />
                                 please copy this link and paste into the address bar.
                             </td>
                             </tr>
