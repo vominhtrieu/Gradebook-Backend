@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-  getUserById,
+  getUserById, getUsersByEmail,
   updateUserAvatar,
   updateUserName,
   updateUserPassword,
@@ -61,6 +61,20 @@ export const getProfileHandler = async (req: Request, res: Response) => {
     res.status(400).json("Something went wrong!");
   }
 };
+
+export const getUsersByEmailHandler = async (req: Request, res: Response) => {
+  try {
+    const userData = req.headers["userData"] as any;
+    const users = await getUsersByEmail(req.body.email);
+    if (users !== null) {
+      res.json(users);
+      return;
+    }
+    res.status(400).json("User not found!");
+  } catch (err) {
+    res.status(400).json("Something went wrong!");
+  }
+}
 
 export const updateStudentIdHandler = async (req: Request, res: Response) => {
   try {

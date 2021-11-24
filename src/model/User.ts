@@ -1,6 +1,6 @@
 import { sequelize } from "./db";
 import bcrypt from "bcrypt";
-import Model, { DataTypes } from "sequelize";
+import Model, { DataTypes, Op } from "sequelize";
 
 export const User = sequelize.define(
   "user",
@@ -136,6 +136,24 @@ export async function getUserById(id: any): Promise<any> {
       return null;
     }
     return data.toJSON();
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function getUsersByEmail(email: any): Promise<any> {
+  try {
+    const data = await User.findAll({
+      where: {
+        email: {
+          [Op.like]: `${email}%`
+        }
+      },
+    });
+    if (data == null) {
+      return null;
+    }
+    return JSON.parse(JSON.stringify(data));
   } catch (e) {
     return null;
   }

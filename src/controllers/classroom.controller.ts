@@ -118,9 +118,8 @@ export const sendInviteLinkHandler = async (req: Request, res: Response) => {
                 subject: "Classroom invitation",
                 html: getMailContent(userData.name, inviteLink, req.body.role, classroom.name),
             }).then(() => {
-                res.sendStatus(200);
+                res.status(200).json("Invitation has been sent");
             }).catch((err) => {
-                console.log(err);
                 res.sendStatus(400);
             })
         }
