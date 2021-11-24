@@ -229,7 +229,7 @@ export async function updateUserPassword(
             return null;
         }
         const user = <any>data.toJSON();
-        if (bcrypt.compareSync(oldPassword, user.password)) {
+        if (! user.password || bcrypt.compareSync(oldPassword, user.password)) {
             const result = await User.update(
                 {
                     password: bcrypt.hashSync(newPassword, 10),
