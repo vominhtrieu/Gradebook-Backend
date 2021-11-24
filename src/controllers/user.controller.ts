@@ -1,42 +1,13 @@
 import { Request, Response } from "express";
 import {
-    getUserById, getUsersByEmail,
+    getUserById,
+    getUsersByEmail,
     updateUserAvatar,
     updateUserName,
     updateUserPassword,
     updateUserStudentId,
 } from "../model/User";
 import { getClassroomsByUserId } from "../model/Classroom";
-
-export const getStudentIdHandler = async (req: Request, res: Response) => {
-    try {
-        const userData = req.headers["userData"] as any;
-        const user = await getUserById(userData.id);
-        if (user !== null) {
-            res.json({
-                studentId: user.student_id,
-            });
-            return;
-        }
-    } catch (err) {
-        res.status(400).json("Some thing went wrong!");
-    }
-};
-
-export const getNameHandler = async (req: Request, res: Response) => {
-    try {
-        const userData = req.headers["userData"] as any;
-        const user = await getUserById(userData.id);
-        if (user !== null) {
-            res.json({
-                name: user.name,
-            });
-            return;
-        }
-    } catch (err) {
-        res.status(400).json("Some thing went wrong!");
-    }
-};
 
 export const getProfileHandler = async (req: Request, res: Response) => {
     try {
@@ -60,7 +31,7 @@ export const getProfileHandler = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(400).json("Something went wrong!");
     }
-};
+}
 
 export const getUsersByEmailHandler = async (req: Request, res: Response) => {
     try {
@@ -74,7 +45,7 @@ export const getUsersByEmailHandler = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(400).json("Something went wrong!");
     }
-}
+};
 
 export const updateStudentIdHandler = async (req: Request, res: Response) => {
     try {
