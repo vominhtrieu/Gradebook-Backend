@@ -4,7 +4,7 @@ import {
     createClassroom,
     getClassroomDetailById,
     getAllClassrooms,
-    getClassroomsByTeacherId,
+    getClassroomsByUserId,
     getClassroomDetailByCode
 } from "../model/Classroom";
 import { enrollClassroom } from "../model/Classroom";
@@ -67,9 +67,9 @@ export const getAllClassroomsHandler = async (req: Request, res: Response) => {
         const teacherId = parseInt(req.query.id as string);
         let classrooms;
         if (teacherId > 0) {
-            classrooms = await getClassroomsByTeacherId(teacherId, user.id);
+            classrooms = await getClassroomsByUserId(teacherId, user.id);
         } else {
-            classrooms = await getAllClassrooms(user.id);
+            classrooms = await getClassroomsByUserId(user.id, user.id);
         }
         if (classrooms != null) {
             res.json(classrooms);
