@@ -7,11 +7,18 @@ import {
   sendInviteLinkHandler,
   getClassroomsWithRoleStudentHandler,
   getClassroomsWithRoleTeacherHandler,
+  getGradeStructuresHandler,
+  updateGradeStructuresHandler,
+  createGradeStructuresHandler, deleteGradeStructuresHandler,
 } from "../controllers/classroom.controller";
 
 const router = express.Router();
 
 router.post("/:id/enroll", enrollClassroomHandler);
+router.get("/:id/grade-structures", getGradeStructuresHandler);
+router.post("/:id/grade-structures", createGradeStructuresHandler);
+router.put("/:id/grade-structures", updateGradeStructuresHandler);
+router.delete("/:id/grade-structures", deleteGradeStructuresHandler);
 router.get("/:id", getClassroomDetailHandler);
 router.get("/role/student", getClassroomsWithRoleStudentHandler);
 router.get("/role/teacher", getClassroomsWithRoleTeacherHandler);

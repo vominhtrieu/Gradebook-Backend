@@ -17,8 +17,9 @@ export const getProfileHandler = async (req: Request, res: Response) => {
         const classroomCount = classrooms.length;
         if (user !== null) {
             res.json({
-                studentId: user.student_id,
+                id: user.id,
                 name: user.name,
+                studentId: user.student_id,
                 email: user.email,
                 avatar: user.avatar,
                 joinedDate: user.createdAt,
