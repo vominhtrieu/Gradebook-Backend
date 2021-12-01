@@ -118,7 +118,7 @@ export async function getGradeStructureByClassroomId(
     where: {
       classroomId: classroomId,
     },
-    order: [["order", "ASC"]],
+    order: [["order", "DESC"]],
   });
 
   let result: any[] = [];
