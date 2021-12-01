@@ -67,20 +67,27 @@ export async function updateGradeStructure(data: any): Promise<boolean> {
   }
 }
 
-export async function updateGradeStructureOrder(
-  classroomId: any,
-  gradeStructureData: any,
-  index: any
-): Promise<boolean> {
+export async function updateGradeStructureOrder(data: any): Promise<boolean> {
   try {
     await GradeStructure.update(
       {
-        order: index,
+        order: data.destinationIndex,
       },
       {
         where: {
-          id: gradeStructureData.id,
-          classroomId,
+          id: data.sourceId,
+          classroomId: data.classroomId,
+        },
+      }
+    );
+    await GradeStructure.update(
+      {
+        order: data.sourceIndex,
+      },
+      {
+        where: {
+          id: data.destinationId,
+          classroomId: data.classroomId,
         },
       }
     );

@@ -266,11 +266,11 @@ export async function updateGradeStructuresOrderHandler(
     if (!ok) {
       return res.sendStatus(400);
     }
-
-    const gradeStructures = req.body.gradeStructures;
-    gradeStructures.map(async (gradeStructure: any, index: any) => {
-      await updateGradeStructureOrder(params.id, gradeStructure, index);
-    });
+    req.body.classroomId = req.params.id;
+    if (await updateGradeStructureOrder(req.body)) {
+      return res.json("Success");
+    }
+    return res.sendStatus(500);
   } catch (err: any) {
     return res.sendStatus(400);
   }
