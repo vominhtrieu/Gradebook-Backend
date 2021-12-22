@@ -17,11 +17,11 @@ import { getUserById } from "../model/User";
 import {
     createGradeStructure,
     deleteGradeStructure,
-    getGradeStructureByClassroomId,
+    getGradeStructureByClassroomId, markFinal,
     updateGradeStructure,
     updateGradeStructureOrder,
 } from "../model/GradeStructure";
-import { GradeDetail } from "../model/GradeDetail";
+import { GetGradeBoard, GradeDetail, ImportGradeDetail } from "../model/GradeDetail";
 
 let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -143,7 +143,7 @@ export const createClassroomHandler = async (req: Request, res: Response) => {
     try {
         const user = req.headers["userData"] as any;
         req.body.teacherId = user.id;
-        const classroom = await createClassroom(user.id, req.body);
+        const classroom = await createClassroom(user, req.body);
         if (classroom.id > 0) {
             res.json(classroom);
             return;
@@ -318,13 +318,69 @@ export async function importGradeDetails(
     res: Response
 ) {
     try {
+        if (!req.file) {
+            return res.sendStatus(400);
+        }
         const user = req.headers["userData"] as any;
         const params: any = req.params;
-        const ok = await checkValidMember(params.id, user.id);
+        const ok = await checkValidTeacher(params.id, user.id);
         if (!ok) {
             return res.sendStatus(400);
         }
+        const workbook = new Excel.Workbook();
+        await workbook.xlsx.readFile(req.file.path).then(() => {
+            let worksheet = workbook.getWorksheet(1);
+            worksheet.eachRow({includeEmpty: false,}, function (row, rowNumber) {
+                if (rowNumber === 1) {
+                    return;
+                }
+                const values: any = row.values;
+                ImportGradeDetail(req.body.gradeStructureId, values[1], values[2])
+            });
+        }).then(()=>{
+            res.sendStatus(200);
+        }).catch((err)=>{
+            res.sendStatus(400);
+        })
     } catch (err: any) {
+        return res.sendStatus(400);
+    }
+}
+
+export async function updateGradeDetails(
+    req: Request,
+    res: Response
+) {
+    try {
+        const user = req.headers["userData"] as any;
+        const params: any = req.params;
+        const ok = await checkValidTeacher(params.id, user.id);
+        if (!ok) {
+            return res.sendStatus(400);
+        }
+        await ImportGradeDetail(req.body.gradeStructureId, req.body.studentId, req.body.grade)
+        res.sendStatus(200)
+    } catch (e) {
+        return res.sendStatus(400);
+    }
+}
+
+
+
+export async function markFinalizedGradeStructure(
+    req: Request,
+    res: Response
+) {
+    try {
+        const user = req.headers["userData"] as any;
+        const params: any = req.params;
+        const ok = await checkValidTeacher(params.id, user.id);
+        if (!ok) {
+            return res.sendStatus(400);
+        }
+        await markFinal(req.body.gradeStructureId)
+        res.sendStatus(200)
+    } catch (e) {
         return res.sendStatus(400);
     }
 }
@@ -362,3 +418,26 @@ export async function importStudents(
         return res.sendStatus(400);
     }
 }
+
+export async function getGradeBoard(
+    req: Request,
+    res: Response
+) {
+    try {
+        const user = req.headers["userData"] as any;
+        const params: any = req.params;
+        const ok = await checkValidTeacher(params.id, user.id);
+        if (!ok) {
+            return res.sendStatus(400);
+        }
+
+        const result = await GetGradeBoard(req.query.gradeStructureId);
+        if (result) {
+            return res.json(result);
+        }
+        res.sendStatus(400);
+    } catch (err: any) {
+        return res.sendStatus(400);
+    }
+}
+

@@ -4,9 +4,13 @@ import { User } from "./User";
 import { Classroom } from "./Classroom";
 
 export const ClassroomMember = sequelize.define("classroom_member", {
-            userId: {
+            id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
+                autoIncrement: true,
+            },
+            userId: {
+                type: DataTypes.INTEGER,
             },
             studentId: {
                 type: DataTypes.STRING,
@@ -16,7 +20,6 @@ export const ClassroomMember = sequelize.define("classroom_member", {
             },
             classroomId: {
                 type: DataTypes.INTEGER,
-                primaryKey: true,
             },
             role: {
                 type: DataTypes.INTEGER,
@@ -68,25 +71,29 @@ export async function checkValidMember(classroomId: any, userId: any): Promise<b
 }
 
 export async function importClassroomMember(classroomId: any, studentId: any, name: string): Promise<boolean> {
-    if (!classroomId || !studentId || !name) {
-        return false;
-    }
-    let classroomMember: any = await ClassroomMember.findOne({
-        where: {
-            classroomId: classroomId,
-            studentId: studentId,
+    try {
+        if (!classroomId || !studentId || !name) {
+            return false;
         }
-    })
-    if (classroomMember) {
-        classroomMember.classroomName = name;
-        classroomMember.save();
-        return true;
+        let classroomMember: any = await ClassroomMember.findOne({
+            where: {
+                classroomId: classroomId,
+                studentId: studentId + "",
+            }
+        })
+        if (classroomMember) {
+            classroomMember.classroomName = name;
+            classroomMember.save();
+            return true;
+        }
+        await ClassroomMember.create({
+            classroomId: classroomId,
+            studentId: studentId + "",
+            classroomName: name,
+            role: 2,
+        })
+    } catch (e) {
+        console.log(e);
     }
-    await ClassroomMember.create({
-        classroomId: classroomId,
-        studentId: studentId,
-        classroomName: name,
-        role: 2,
-    })
     return true;
 }

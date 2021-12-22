@@ -11,8 +11,8 @@ export const GradeDetail = sequelize.define(
             primaryKey: true,
             autoIncrement: true,
         },
-        staffId: {
-            type: DataTypes.INTEGER,
+        studentId: {
+            type: DataTypes.STRING,
         },
         gradeStructureId: {
             type: DataTypes.INTEGER,
@@ -26,6 +26,42 @@ export const GradeDetail = sequelize.define(
     }
 );
 
-export function ImportGradeDetail() {
-``
+export async function ImportGradeDetail(gradeStructureId: any, studentId: any, grade: any) {
+    const gradeDetail: any = await GradeDetail.findOne({
+        where: {
+            studentId: studentId + "",
+            gradeStructureId: gradeStructureId,
+        }
+    })
+    if (gradeDetail) {
+        gradeDetail.grade = grade
+        gradeDetail.save();
+    } else {
+        await GradeDetail.create({
+            studentId: studentId,
+            gradeStructureId: gradeStructureId,
+            grade: grade,
+        })
+    }
+}
+
+export async function GetGradeBoard(gradeStructureId: any): Promise<any> {
+    try {
+        const gradeDetails = await GradeDetail.findAll({
+            where: {
+                gradeStructureId: gradeStructureId
+            },
+            order: [
+                ["student_id", "asc"],
+            ],
+        })
+
+        let result: any = [];
+        gradeDetails.forEach(detail => {
+            result.push(detail.toJSON())
+        })
+        return result
+    } catch (e) {
+        return []
+    }
 }

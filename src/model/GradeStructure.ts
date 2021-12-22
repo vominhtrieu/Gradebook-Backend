@@ -27,6 +27,10 @@ export const GradeStructure = sequelize.define(
             type: DataTypes.FLOAT,
             allowNull: false,
         },
+        isFinal: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
     },
     {
         underscored: true,
@@ -128,7 +132,24 @@ export async function getGradeStructureByClassroomId(
             id: data.id,
             name: data.name,
             grade: data.grade,
+            isFinal: data.isFinal
         });
     });
     return result;
 }
+
+export async function markFinal(gradeStructureId: any): Promise<boolean> {
+    try {
+        await GradeStructure.update({
+            isFinal: true,
+        }, {
+            where: {
+                id: gradeStructureId
+            }
+        })
+        return true;
+    } catch (e) {
+        return false
+    }
+}
+

@@ -43,7 +43,7 @@ export const Classroom = sequelize.define(
 Classroom.hasMany(ClassroomMember, {foreignKey: "classroomId"});
 
 export async function createClassroom(
-    userId: number,
+    user: any,
     classroom: any
 ): Promise<any> {
     try {
@@ -65,7 +65,7 @@ export async function createClassroom(
             studentInvitationCode: studentInvitationCode,
             teacherInvitationCode: teacherInvitationCode,
         });
-        await enrollClassroom(userId, (result.toJSON() as any).id, 2);
+        await enrollClassroom(user, (result.toJSON() as any).id, 2);
         return result.toJSON();
     } catch (err) {
         return null;
