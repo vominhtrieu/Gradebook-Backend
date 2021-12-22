@@ -11,7 +11,7 @@ sequelize = new Sequelize({
   host: config.host,
   port: config.port,
   dialect: "postgres",
-  logging: false,
+  logging: true,
   dialectOptions: {
     ssl:
       process.env.ENV === "production"

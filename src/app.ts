@@ -44,8 +44,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
                 if (err) {
                     res.sendStatus(401);
                 } else {
-                    if (await getUserById(decoded.id)) {
-                        req.headers["userData"] = decoded;
+                    const user:any = await getUserById(decoded.id);
+                    if (user) {
+                        req.headers["userData"] = user;
                         next();
                     } else {
                         res.sendStatus(401);
