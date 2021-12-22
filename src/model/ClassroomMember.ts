@@ -112,7 +112,7 @@ export async function importClassroomMember(classroomId: any, studentId: any, na
             classroomId: classroomId,
             studentId: studentId + "",
             classroomName: name,
-            role: 2,
+            role: 1,
         })
     } catch (e) {
         console.log(e);
