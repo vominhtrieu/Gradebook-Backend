@@ -142,6 +142,7 @@ function getClassroomData(value: any, userId: any): any {
         }
         const data: any = {
             name: member.user.name,
+            studentId: member.user.student_id,
             avatar: member.user.avatar,
             role: member.role,
         };

@@ -358,8 +358,8 @@ export async function updateGradeDetails(
         if (!ok) {
             return res.sendStatus(400);
         }
-        await ImportGradeDetail(req.body.gradeStructureId, req.body.studentId, req.body.grade)
-        res.sendStatus(200)
+        await ImportGradeDetail(req.body.gradeStructureId, req.body.studentId, req.body.grade);
+        res.status(200).json(req.body.grade);
     } catch (e) {
         return res.sendStatus(400);
     }
