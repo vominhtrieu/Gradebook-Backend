@@ -58,6 +58,7 @@ export async function getGradeBoardStudent(classroomId: any): Promise<any> {
     const classroomMember = await ClassroomMember.findAll({
         where: {
             classroomId: classroomId,
+            role: 1,
         },
         order: [
             ["student_id", "asc"],
