@@ -292,7 +292,7 @@ export async function enrollClassroom(
             classroomId: classroom.id,
             userId: user.id,
             studentId: user.student_id,
-            classroomName: user.classroomName,
+            classroomName: user.name,
             role: role,
         });
         return result.toJSON();
