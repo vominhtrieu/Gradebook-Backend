@@ -11,7 +11,11 @@ import {
     getClassroomsByUserIdWithRoleTeacher,
 } from "../model/Classroom";
 import { enrollClassroom } from "../model/Classroom";
-import { checkValidMember, checkValidTeacher, importClassroomMember } from "../model/ClassroomMember";
+import {
+    checkValidMember,
+    checkValidTeacher, getGradeBoardStudent,
+    importClassroomMember
+} from "../model/ClassroomMember";
 import getMailContent from "./mailContent";
 import { getUserById } from "../model/User";
 import {
@@ -112,6 +116,23 @@ export const getClassroomsWithRoleStudentHandler = async (
     try {
         const user = req.headers["userData"] as any;
         const classrooms = await getClassroomsByUserIdWithRoleStudent(user);
+        if (classrooms !== null) {
+            res.json(classrooms);
+            return;
+        }
+        res.status(400).json("Something went wrong!");
+    } catch (err: any) {
+        res.status(400).json("Something went wrong!");
+    }
+};
+
+export const getGradeBoardStudentHandler = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        // const user = req.headers["userData"] as any;
+        const classrooms = await getGradeBoardStudent(req.params.id);
         if (classrooms !== null) {
             res.json(classrooms);
             return;
@@ -337,9 +358,9 @@ export async function importGradeDetails(
                 const values: any = row.values;
                 ImportGradeDetail(req.body.gradeStructureId, values[1], values[2])
             });
-        }).then(()=>{
+        }).then(() => {
             res.sendStatus(200);
-        }).catch((err)=>{
+        }).catch((err) => {
             res.sendStatus(400);
         })
     } catch (err: any) {
@@ -364,7 +385,6 @@ export async function updateGradeDetails(
         return res.sendStatus(400);
     }
 }
-
 
 
 export async function markFinalizedGradeStructure(
@@ -409,9 +429,9 @@ export async function importStudents(
                 const values: any = row.values;
                 importClassroomMember(params.id, values[1], values[2])
             });
-        }).then(()=>{
-           res.sendStatus(200);
-        }).catch((err)=>{
+        }).then(() => {
+            res.sendStatus(200);
+        }).catch((err) => {
             res.sendStatus(400);
         })
     } catch (err: any) {

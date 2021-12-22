@@ -54,6 +54,23 @@ export async function checkValidTeacher(classroomId: any, userId: any): Promise<
     }
 }
 
+export async function getGradeBoardStudent(classroomId: any):Promise<any> {
+    const classroom = await ClassroomMember.findAll({
+        where: {
+            classroomId: classroomId,
+        },
+        order: [
+            ["student_id", "asc"],
+        ],
+    })
+
+    let result: any[] = [];
+    classroom.forEach(value => {
+        result.push(value.toJSON())
+    })
+    return result;
+}
+
 export async function checkValidMember(classroomId: any, userId: any): Promise<boolean> {
     try {
         const classroom = await ClassroomMember.findOne({

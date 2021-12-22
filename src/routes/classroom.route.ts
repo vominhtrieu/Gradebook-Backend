@@ -16,7 +16,7 @@ import {
     importGradeDetails,
     importStudents,
     updateGradeDetails,
-    getGradeBoard, markFinalizedGradeStructure,
+    getGradeBoard, markFinalizedGradeStructure, getGradeBoardStudentHandler,
 } from "../controllers/classroom.controller";
 import multer from "multer";
 
@@ -36,6 +36,7 @@ const uploader = multer({storage: storage});
 router.post("/:id/enroll", enrollClassroomHandler);
 router.get("/role/student", getClassroomsWithRoleStudentHandler);
 router.get("/role/teacher", getClassroomsWithRoleTeacherHandler);
+router.get("/:id/grade-board-student", getGradeBoardStudentHandler);
 router.get("/", getAllClassroomsHandler);
 router.post("/send-invitation-link", sendInviteLinkHandler);
 router.post("/", createClassroomHandler);
