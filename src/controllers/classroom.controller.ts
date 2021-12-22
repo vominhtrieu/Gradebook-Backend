@@ -132,9 +132,9 @@ export const getGradeBoardStudentHandler = async (
 ) => {
     try {
         // const user = req.headers["userData"] as any;
-        const classrooms = await getGradeBoardStudent(req.params.id);
-        if (classrooms !== null) {
-            res.json(classrooms);
+        const students = await getGradeBoardStudent(req.params.id);
+        if (students !== null) {
+            res.json(students);
             return;
         }
         res.status(400).json("Something went wrong!");

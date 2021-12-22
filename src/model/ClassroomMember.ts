@@ -54,8 +54,8 @@ export async function checkValidTeacher(classroomId: any, userId: any): Promise<
     }
 }
 
-export async function getGradeBoardStudent(classroomId: any):Promise<any> {
-    const classroom = await ClassroomMember.findAll({
+export async function getGradeBoardStudent(classroomId: any): Promise<any> {
+    const classroomMember = await ClassroomMember.findAll({
         where: {
             classroomId: classroomId,
         },
@@ -65,8 +65,12 @@ export async function getGradeBoardStudent(classroomId: any):Promise<any> {
     })
 
     let result: any[] = [];
-    classroom.forEach(value => {
-        result.push(value.toJSON())
+    classroomMember.forEach(value => {
+        const student:any = value.toJSON();
+        result.push({
+            studentId: student.studentId,
+            name: student.classroomName,
+        })
     })
     return result;
 }
