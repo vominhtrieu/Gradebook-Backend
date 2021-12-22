@@ -131,6 +131,9 @@ function getClassroomData(value: any, userId: any): any {
     classroom.teachers = [];
     classroom.students = [];
     classroom.classroom_members.forEach((member: any) => {
+        if (!member.user){
+            return;
+        }
         if (member.userId === userId) {
             if (member.role === 2) {
                 isTeacher = true;
