@@ -131,7 +131,7 @@ function getClassroomData(value: any, userId: any): any {
     classroom.teachers = [];
     classroom.students = [];
     classroom.classroom_members.forEach((member: any) => {
-        if (!member.user){
+        if (!member.user) {
             return;
         }
         if (member.userId === userId) {
@@ -174,7 +174,7 @@ function getClassroomsData(data: any, userId: number) {
     return result;
 }
 
-export async function getAllClassrooms(userId: number): Promise<any> {
+export async function getAllClassroomsByUserId(userId: number): Promise<any> {
     try {
         const data = await Classroom.findAll({
             include: [
@@ -185,6 +185,41 @@ export async function getAllClassrooms(userId: number): Promise<any> {
             ],
         });
         return getClassroomsData(data, userId);
+    } catch (err) {
+        return null;
+    }
+}
+
+export async function getAllClassrooms(): Promise<any> {
+    try {
+        let data: any = await Classroom.findAll({
+            include: [
+                {
+                    model: ClassroomMember,
+                    include: [{
+                        model: User,
+                    }],
+                    where: {
+                        role: 2
+                    },
+                },
+            ],
+        });
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i].toJSON();
+            let teachers = [];
+            for (let j = 0; j < item.classroom_members.length; j++) {
+                teachers.push(item.classroom_members[j].classroomName)
+            }
+            data[i] = {
+                id: item.id,
+                createdAt: item.createdAt.toLocaleDateString("vi"),
+                name: item.name,
+                description: item.description,
+                teachers: teachers
+            };
+        }
+        return data;
     } catch (err) {
         return null;
     }
@@ -266,7 +301,7 @@ export async function getClassroomsByUserIdWithRoleTeacher(
     userId: number
 ): Promise<any> {
     try {
-        const result = await getClassroomsByUserIdWithRole(userId,null, 2);
+        const result = await getClassroomsByUserIdWithRole(userId, null, 2);
         return result;
     } catch (err) {
         return null;

@@ -17,6 +17,10 @@ export const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        role: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+        },
         email: {
             type: DataTypes.STRING,
             unique: true,
@@ -28,6 +32,10 @@ export const User = sequelize.define(
         password: {
             type: DataTypes.STRING,
             allowNull: true,
+        },
+        blocked: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
         external_type: {
             type: DataTypes.STRING,
@@ -229,7 +237,7 @@ export async function updateUserPassword(
             return null;
         }
         const user = <any>data.toJSON();
-        if (! user.password || bcrypt.compareSync(oldPassword, user.password)) {
+        if (!user.password || bcrypt.compareSync(oldPassword, user.password)) {
             const result = await User.update(
                 {
                     password: bcrypt.hashSync(newPassword, 10),
@@ -249,6 +257,42 @@ export async function updateUserPassword(
     }
 }
 
-export async function getAllUser(): Promise<null> {
-    return null;
+export async function getAllUser(): Promise<any> {
+    const data: any = await User.findAll({
+        raw: true,
+    });
+
+    for (let i = 0; i < data.length; i++) {
+        data[i] = {
+            id: data[i].id,
+            createdAt: data[i].createdAt.toLocaleDateString("vi"),
+            name: data[i].name,
+            email: data[i].email,
+            studentId: data[i].student_id,
+            role: data[i].role,
+            blocked: data[i].blocked,
+        }
+    }
+    return data;
+}
+
+export async function BlockUser(id: any) {
+    await User.update({
+        blocked: true,
+    }, {
+        where: {
+            id,
+        }
+    });
+}
+
+
+export async function UnBlockUser(id: any) {
+    await User.update({
+        blocked: false,
+    }, {
+        where: {
+            id,
+        }
+    });
 }

@@ -11,6 +11,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
+import adminRouter from "./routes/admin.route";
 import classroomRouter from "./routes/classroom.route";
 import { sequelize } from "./model/db";
 import jwt from "jsonwebtoken";
@@ -60,6 +61,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 app.use("/users", userRouter);
 app.use("/classrooms", classroomRouter);
+app.use("/admin", adminRouter);
 if (!fs.existsSync("./public")) {
     fs.mkdirSync("./public");
 }

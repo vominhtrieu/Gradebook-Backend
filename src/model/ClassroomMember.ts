@@ -1,7 +1,6 @@
 import { sequelize } from "./db";
 import { DataTypes, Op } from "sequelize";
 import { User } from "./User";
-import { Classroom } from "./Classroom";
 
 export const ClassroomMember = sequelize.define("classroom_member", {
             id: {

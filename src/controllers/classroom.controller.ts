@@ -4,7 +4,7 @@ import Excel from "exceljs";
 import {
     createClassroom,
     getClassroomDetailById,
-    getAllClassrooms,
+    getAllClassroomsByUserId,
     getClassroomsByUserId,
     getClassroomDetailByCode,
     getClassroomsByUserIdWithRoleStudent,
