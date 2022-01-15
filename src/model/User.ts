@@ -55,6 +55,7 @@ export async function registerUser(user: any): Promise<any> {
             name: user.name,
             email: user.email.toLowerCase(),
             password: user.password,
+            role: user.role ? user.role : 1,
         });
         return result.toJSON();
     } catch (err) {
@@ -257,9 +258,11 @@ export async function updateUserPassword(
     }
 }
 
-export async function getAllUser(): Promise<any> {
+export async function getAllUser(condition: any): Promise<any> {
     const data: any = await User.findAll({
+        where: condition,
         raw: true,
+        order: [["created_at", "desc"]]
     });
 
     for (let i = 0; i < data.length; i++) {

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    blockUserHandler,
+    blockUserHandler, changeStudentIDHandler, createNewAdminHandler,
     getAllClassroomsHandler,
     getAllUserHandler,
     unBlockUserHandler
@@ -9,8 +9,10 @@ import {
 const router = express.Router();
 
 router.get("/users", getAllUserHandler);
+router.post("/users/admin", createNewAdminHandler);
 router.post("/users/block", blockUserHandler);
 router.post("/users/unblock", unBlockUserHandler);
+router.put("/users/student-id", changeStudentIDHandler);
 router.get("/classrooms", getAllClassroomsHandler);
 
 export default router;

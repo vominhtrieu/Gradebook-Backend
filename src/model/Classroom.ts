@@ -190,9 +190,10 @@ export async function getAllClassroomsByUserId(userId: number): Promise<any> {
     }
 }
 
-export async function getAllClassrooms(): Promise<any> {
+export async function getAllClassrooms(condition: any): Promise<any> {
     try {
         let data: any = await Classroom.findAll({
+            where: condition,
             include: [
                 {
                     model: ClassroomMember,
