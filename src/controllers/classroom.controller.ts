@@ -37,6 +37,7 @@ import {
   GradeDetail,
   ImportGradeDetail,
   UpdateGradeDetailIsCompleteReview,
+  UpdateGradeDetailIsInReview,
   UpdateGradeDetailIsRequested,
   UpdateGradeForGradeDetailById,
 } from "../model/GradeDetail";
@@ -46,6 +47,7 @@ import {
   GetRequestedReviews,
   GetReviewById,
   UpdateReviewIsComplete,
+  UpdateReviewIsInProgress,
 } from "../model/GradeReview";
 
 let transporter = nodemailer.createTransport({
@@ -380,7 +382,7 @@ export async function getStudentGradeDetails(req: Request, res: Response) {
             gradeStructureGrade: classroomGradeStructures[i].grade,
             grade: gradeDetail.grade,
             gradeDetailId: gradeDetail.id,
-            isReviewed: gradeDetail.isReviewed,
+            reviewState: gradeDetail.reviewState,
             updatedDate: gradeDetail.updatedAt,
           };
 
@@ -539,6 +541,7 @@ export async function requestGradeReview(req: Request, res: Response) {
     const classroomTeacherIds = await getClassroomTeacherIds(params.id);
 
     const result = await AddGradeReview(
+      params.id,
       classroomTeacherIds[req.body.teacherIndex],
       req.body.gradeDetailId,
       req.body.expectationGrade,
@@ -610,6 +613,33 @@ export async function getGradeReviews(req: Request, res: Response) {
   }
 }
 
+export async function acceptGradeReview(req: Request, res: Response) {
+  try {
+    const user = req.headers["userData"] as any;
+    const params: any = req.params;
+    const ok = await checkValidTeacher(params.id, user.id);
+
+    if (!ok) {
+      return res.sendStatus(400);
+    }
+
+    const review = await GetReviewById(params.id, req.body.gradeDetailId);
+    const isReviewAccepted = await UpdateReviewIsInProgress(
+      params.id,
+      req.body.gradeDetailId
+    );
+    const isGradeDetailInReview = await UpdateGradeDetailIsInReview(
+      review.gradeDetailId
+    );
+
+    const result = isReviewAccepted && isGradeDetailInReview;
+
+    return res.json(result);
+  } catch (err: any) {
+    return res.sendStatus(400);
+  }
+}
+
 export async function makeFinalDecisionForGradeReview(
   req: Request,
   res: Response
@@ -623,8 +653,11 @@ export async function makeFinalDecisionForGradeReview(
       return res.sendStatus(400);
     }
 
-    const gradeReview = await GetReviewById(req.body.reviewId);
-    const isReviewComplete = await UpdateReviewIsComplete(req.body.reviewId);
+    const gradeReview = await GetReviewById(params.id, req.body.gradeDetailId);
+    const isReviewComplete = await UpdateReviewIsComplete(
+      params.id,
+      req.body.gradeDetailId
+    );
     const isGradeUpdated = await UpdateGradeForGradeDetailById(
       gradeReview.gradeDetailId,
       req.body.finalGrade

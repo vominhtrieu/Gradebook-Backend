@@ -1,23 +1,23 @@
 import { sequelize } from "./db";
-import { DataTypes, Op, where } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import { GradeDetail } from "./GradeDetail";
 import { ClassroomMember } from "./ClassroomMember";
 
 export const GradeReview = sequelize.define(
   "gradeReview",
   {
-    id: {
+    classroomId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+    },
+    gradeDetailId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
     },
     teacherId: {
       type: DataTypes.INTEGER,
     },
-    gradeDetailId: {
-      type: DataTypes.INTEGER,
-    },
-    isReviewed: {
+    reviewState: {
       type: DataTypes.INTEGER,
       defaultValue: 1,
     },
@@ -37,6 +37,7 @@ GradeReview.belongsTo(GradeDetail, { foreignKey: "gradeDetailId" });
 GradeReview.belongsTo(ClassroomMember, { foreignKey: "teacherId" });
 
 export async function AddGradeReview(
+  classroomId: any,
   teacherId: any,
   gradeDetailId: any,
   expectationGrade: any,
@@ -44,6 +45,7 @@ export async function AddGradeReview(
 ): Promise<boolean> {
   try {
     await GradeReview.create({
+      classroomId,
       teacherId,
       gradeDetailId,
       expectationGrade,
@@ -60,7 +62,7 @@ export async function GetRequestedReviews(teacherId: any): Promise<any> {
     const gradeReviews = await GradeReview.findAll({
       where: {
         teacherId,
-        isReviewed: 1,
+        [Op.or]: [{ reviewState: 1 }, { reviewState: 2 }],
       },
       order: [["updated_at", "desc"]],
     });
@@ -75,30 +77,61 @@ export async function GetRequestedReviews(teacherId: any): Promise<any> {
   }
 }
 
-export async function GetReviewById(id: any): Promise<any> {
+export async function GetReviewById(
+  classroomId: any,
+  gradeDetailId: any
+): Promise<any> {
   try {
     const gradeReview = await GradeReview.findOne({
       where: {
-        id,
+        classroomId,
+        gradeDetailId,
       },
     });
 
     let result: any = gradeReview?.toJSON();
     return result;
   } catch (e) {
-    return [];
+    return null;
   }
 }
 
-export async function UpdateReviewIsComplete(id: any): Promise<boolean> {
+export async function UpdateReviewIsInProgress(
+  classroomId: any,
+  gradeDetailId: any
+): Promise<boolean> {
   try {
     await GradeReview.update(
       {
-        isReviewed: 2,
+        reviewState: 2,
       },
       {
         where: {
-          id,
+          classroomId,
+          gradeDetailId,
+        },
+      }
+    );
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function UpdateReviewIsComplete(
+  classroomId: any,
+  gradeDetailId: any
+): Promise<boolean> {
+  try {
+    await GradeReview.update(
+      {
+        reviewState: 3,
+      },
+      {
+        where: {
+          classroomId,
+          gradeDetailId,
         },
       }
     );

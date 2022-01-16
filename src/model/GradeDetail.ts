@@ -20,7 +20,7 @@ export const GradeDetail = sequelize.define(
     grade: {
       type: DataTypes.FLOAT,
     },
-    isReviewed: {
+    reviewState: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
@@ -132,7 +132,7 @@ export async function UpdateGradeDetailIsRequested(id: any): Promise<boolean> {
   try {
     await GradeDetail.update(
       {
-        isReviewed: 1,
+        reviewState: 1,
       },
       {
         where: {
@@ -151,7 +151,7 @@ export async function UpdateGradeDetailIsInReview(id: any): Promise<boolean> {
   try {
     await GradeDetail.update(
       {
-        isReviewed: 2,
+        reviewState: 2,
       },
       {
         where: {
@@ -172,7 +172,7 @@ export async function UpdateGradeDetailIsCompleteReview(
   try {
     await GradeDetail.update(
       {
-        isReviewed: 3,
+        reviewState: 3,
       },
       {
         where: {

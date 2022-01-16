@@ -23,6 +23,7 @@ import {
   requestGradeReview,
   getGradeReviews,
   makeFinalDecisionForGradeReview,
+  acceptGradeReview,
 } from "../controllers/classroom.controller";
 import multer from "multer";
 
@@ -69,9 +70,12 @@ router.post("/:id/student/grades/request-review", requestGradeReview);
 
 // Teacher review
 router.get("/:id/grade-reviews", getGradeReviews);
+router.post("/:id/grade-reviews/accept-review", acceptGradeReview);
 router.post(
   "/:id/grade-reviews/make-final-decision",
   makeFinalDecisionForGradeReview
 );
+
+// Review
 
 export default router;
