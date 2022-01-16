@@ -15,6 +15,8 @@ import adminRouter from "./routes/admin.route";
 import classroomRouter from "./routes/classroom.route";
 import notificationRouter from "./routes/notification.route";
 import { sequelize } from "./model/db";
+import passport from "passport";
+import passportJWT from "passport-jwt";
 import jwt from "jsonwebtoken";
 import { getUserById } from "./model/User";
 import fs from "fs";
@@ -24,6 +26,22 @@ import http from "http";
 
 const app = express();
 const server = new http.Server(app);
+
+const ExtractJwt = passportJWT.ExtractJwt;
+const JwtStrategy = passportJWT.Strategy;
+const strategy = new JwtStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.TOKEN_SECRET,
+}, async function (jwt_payload: any, next: any) {
+    const user = await getUserById(jwt_payload.id);
+    if (user) {
+        next(null, user);
+    } else {
+        next(null, false);
+    }
+});
+
+passport.use(strategy);
 
 const io = new Server(server, {
     cors: {
@@ -47,31 +65,13 @@ app.use((_: Request, res, next: NextFunction) => {
     res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
     next();
 });
+app.use(passport.initialize());
 app.use("/", authRouter);
+app.use(passport.authenticate("jwt", {session: false}))
 app.use((req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers["authorization"];
-    if (authHeader?.startsWith("Bearer ")) {
-        const token = authHeader?.substr(7);
-        jwt.verify(
-            token,
-            process.env.TOKEN_SECRET as string,
-            async (err: any, decoded: any) => {
-                if (err) {
-                    res.sendStatus(401);
-                } else {
-                    const user: any = await getUserById(decoded.id);
-                    if (user) {
-                        req.headers["userData"] = user;
-                        next();
-                    } else {
-                        res.sendStatus(401);
-                    }
-                }
-            }
-        );
-    } else {
-        res.sendStatus(401);
-    }
+    // @ts-ignore
+    req.headers["userData"] = req.user;
+    next();
 });
 app.use("/users", userRouter);
 app.use("/classrooms", classroomRouter);
