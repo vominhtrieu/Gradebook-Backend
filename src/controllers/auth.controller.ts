@@ -21,6 +21,7 @@ export const signInHandler = async (req: Request, res: Response) => {
         studentId: user.student_id,
         email: user.email,
         name: user.name,
+        role: user.role,
         token: token,
       });
       return;
@@ -51,6 +52,7 @@ export const googleSignInHandler = async (req: Request, res: Response) => {
         studentId: user.student_id,
         email: user.email,
         name: user.name,
+        role: user.role,
         token: token,
       });
     }

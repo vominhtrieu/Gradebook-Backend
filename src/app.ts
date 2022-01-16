@@ -17,8 +17,20 @@ import { sequelize } from "./model/db";
 import jwt from "jsonwebtoken";
 import { getUserById } from "./model/User";
 import fs from "fs";
+import { Server } from "socket.io";
+import mySocket from "./socket/socket";
+import http from "http";
 
 const app = express();
+const server = new http.Server(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+    }
+});
+
+mySocket(io);
 
 app.use("/public", express.static("public"));
 app.use(
@@ -45,7 +57,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
                 if (err) {
                     res.sendStatus(401);
                 } else {
-                    const user:any = await getUserById(decoded.id);
+                    const user: any = await getUserById(decoded.id);
                     if (user) {
                         req.headers["userData"] = user;
                         next();
@@ -66,7 +78,7 @@ if (!fs.existsSync("./public")) {
     fs.mkdirSync("./public");
 }
 
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     sequelize
         .sync({alter: true})
         .then((err: any) => {

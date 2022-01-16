@@ -49,7 +49,8 @@
         "pg": "^8.7.1",
         "pg-hstore": "^2.3.4",
         "randomstring": "^1.2.1",
-        "sequelize": "^6.8.0"
+        "sequelize": "^6.8.0",
+        "socket.io": "^4.4.1"
     },
     "config": {
         "unsafe-perm": true
