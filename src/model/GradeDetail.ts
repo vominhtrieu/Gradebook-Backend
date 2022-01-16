@@ -20,6 +20,10 @@ export const GradeDetail = sequelize.define(
     grade: {
       type: DataTypes.FLOAT,
     },
+    isReviewed: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   },
   {
     underscored: true,
