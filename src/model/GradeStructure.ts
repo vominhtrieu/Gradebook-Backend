@@ -2,6 +2,7 @@ import { sequelize } from "./db";
 import { DataTypes, where } from "sequelize";
 import { User } from "./User";
 import { ClassroomMember } from "./ClassroomMember";
+import { sendNotificationToStudent, sendNotificationToUser } from "./Notification";
 
 export const GradeStructure = sequelize.define(
     "gradeStructure",

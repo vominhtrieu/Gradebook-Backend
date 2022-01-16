@@ -24,6 +24,31 @@ export const getProfileHandler = async (req: Request, res: Response) => {
                 avatar: user.avatar,
                 joinedDate: user.createdAt,
                 classroomCount: classroomCount,
+                role: user.role,
+                passwordPresent: user.password && user.password.length > 0,
+            });
+            return;
+        }
+        res.status(400).json("User not found!");
+    } catch (err) {
+        res.status(400).json("Something went wrong!");
+    }
+}
+
+export const getProfileByIDHandler = async (req: Request, res: Response) => {
+    try {
+        const user = await getUserById(req.params.id);
+        const classrooms = await getClassroomsByUserId(+req.params.id, +req.params.id);
+        const classroomCount = classrooms.length;
+        if (user !== null) {
+            res.json({
+                id: user.id,
+                name: user.name,
+                studentId: user.student_id,
+                email: user.email,
+                avatar: user.avatar,
+                joinedDate: user.createdAt,
+                classroomCount: classroomCount,
                 passwordPresent: user.password && user.password.length > 0,
             });
             return;

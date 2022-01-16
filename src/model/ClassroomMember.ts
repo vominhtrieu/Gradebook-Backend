@@ -66,7 +66,7 @@ export async function getGradeBoardStudent(classroomId: any): Promise<any> {
 
     let result: any[] = [];
     classroomMember.forEach(value => {
-        const student:any = value.toJSON();
+        const student: any = value.toJSON();
         result.push({
             studentId: student.studentId,
             name: student.classroomName,
@@ -117,4 +117,14 @@ export async function importClassroomMember(classroomId: any, studentId: any, na
         console.log(e);
     }
     return true;
+}
+
+export async function getClassroomMembers(classroomId: any) {
+    return await ClassroomMember.findAll({
+        where: {
+            classroomId: classroomId,
+            role: 1,
+        },
+        raw: true,
+    })
 }

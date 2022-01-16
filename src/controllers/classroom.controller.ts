@@ -26,6 +26,7 @@ import {
     updateGradeStructureOrder,
 } from "../model/GradeStructure";
 import { GetGradeBoard, GradeDetail, ImportGradeDetail } from "../model/GradeDetail";
+import { sendNotificationToStudent } from "../model/Notification";
 
 let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -399,8 +400,10 @@ export async function markFinalizedGradeStructure(
             return res.sendStatus(400);
         }
         await markFinal(req.body.gradeStructureId)
-        res.sendStatus(200)
+        await sendNotificationToStudent(params.id, "Score has been finalized", "Teachers have mark all score as finalized, click to view", "/classrooms/" + params.id, req.app.get("io"));
+        res.status(200).json("OK");
     } catch (e) {
+        console.log(e);
         return res.sendStatus(400);
     }
 }

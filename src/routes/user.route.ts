@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getProfileByIDHandler,
   getProfileHandler,
   getUsersByEmailHandler,
   updateAvatarHandler,
@@ -22,6 +23,7 @@ const storage = multer.diskStorage({
 const uploader = multer({ storage: storage });
 
 router.get("/profile", getProfileHandler);
+router.get("/:id", getProfileByIDHandler);
 router.get("/profile/studentId", getProfileHandler);
 router.get("/profile/name", getProfileHandler);
 router.post("/find-by-email", getUsersByEmailHandler);

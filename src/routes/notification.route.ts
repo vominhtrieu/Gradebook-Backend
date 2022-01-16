@@ -1,6 +1,9 @@
 import express from "express";
-import { getAllNotifications } from "../controllers/notification.controller";
+import { getAllNotifications, getUnreadNotificationCount } from "../controllers/notification.controller";
 
 const router = express.Router();
 
-router.get("/notifications/", getAllNotifications);
+router.get("/unread", getUnreadNotificationCount);
+router.get("/", getAllNotifications);
+
+export default router;

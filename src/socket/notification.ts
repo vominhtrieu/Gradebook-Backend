@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 
 export default (io: Server, socket: any) => {
-    socket.on("subscribeToNotifications", () => {
+    socket.on("newNotification", () => {
         socket.join("n/" + socket.userId);
     });
 

@@ -13,6 +13,7 @@ import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
 import adminRouter from "./routes/admin.route";
 import classroomRouter from "./routes/classroom.route";
+import notificationRouter from "./routes/notification.route";
 import { sequelize } from "./model/db";
 import jwt from "jsonwebtoken";
 import { getUserById } from "./model/User";
@@ -32,6 +33,7 @@ const io = new Server(server, {
 
 mySocket(io);
 
+app.set("io", io);
 app.use("/public", express.static("public"));
 app.use(
     express.urlencoded({
@@ -74,6 +76,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use("/users", userRouter);
 app.use("/classrooms", classroomRouter);
 app.use("/admin", adminRouter);
+app.use("/notifications", notificationRouter);
+
 if (!fs.existsSync("./public")) {
     fs.mkdirSync("./public");
 }
