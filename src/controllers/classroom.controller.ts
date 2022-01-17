@@ -594,7 +594,7 @@ export async function getGradeReviews(req: Request, res: Response) {
             gradeDetail.gradeStructureId === classroomGradeStructures[i].id
           ) {
             const resultItem = {
-              ...reviews[i],
+              ...reviews[j],
               gradeStructureName: classroomGradeStructures[i].name,
               gradeStructureGrade: classroomGradeStructures[i].grade,
               studentId: gradeDetail.studentId,
@@ -606,6 +606,8 @@ export async function getGradeReviews(req: Request, res: Response) {
         }
       }
     }
+
+    console.log(result);
 
     return res.json(result);
   } catch (err: any) {
