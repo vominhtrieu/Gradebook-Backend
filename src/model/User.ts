@@ -1,6 +1,7 @@
 import { sequelize } from "./db";
 import bcrypt from "bcrypt";
 import Model, { DataTypes, Op } from "sequelize";
+import randomstring from "randomstring";
 
 export const User = sequelize.define(
     "user",
@@ -43,6 +44,13 @@ export const User = sequelize.define(
         external_id: {
             type: DataTypes.STRING,
         },
+        active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        activationCode: {
+            type: DataTypes.STRING
+        }
     },
     {underscored: true}
 );
@@ -56,6 +64,7 @@ export async function registerUser(user: any): Promise<any> {
             email: user.email.toLowerCase(),
             password: user.password,
             role: user.role ? user.role : 1,
+            activationCode: randomstring.generate({length: 20})
         });
         return result.toJSON();
     } catch (err) {
@@ -74,6 +83,10 @@ export async function signUserIn(
         },
     });
     if (data === null) {
+        return null;
+    }
+    // @ts-ignore
+    if (!data.active) {
         return null;
     }
     const user = <any>data.toJSON();
@@ -102,6 +115,7 @@ export async function googleSignUserIn(
                 email,
                 external_type: externalType,
                 external_id: externalId,
+                active: true
             });
             return result.toJSON();
         } catch (err) {
@@ -148,6 +162,22 @@ export async function getUserById(id: any): Promise<any> {
     }
 }
 
+export async function getUserByActivationCode(activateCode: any): Promise<any> {
+    try {
+        const data = await User.findOne({
+            where: {
+                activationCode: activateCode,
+            },
+        });
+        if (data == null) {
+            return null;
+        }
+        return data.toJSON();
+    } catch (e) {
+        return null;
+    }
+}
+
 export async function getUsersByEmail(email: any): Promise<any> {
     try {
         const data = await User.findAll({
@@ -157,7 +187,7 @@ export async function getUsersByEmail(email: any): Promise<any> {
                 }
             },
         });
-        if (data == null) {
+        if (data == null || data.length === 0) {
             return null;
         }
         return JSON.parse(JSON.stringify(data));
@@ -238,7 +268,8 @@ export async function updateUserPassword(
             return null;
         }
         const user = <any>data.toJSON();
-        if (!user.password || bcrypt.compareSync(oldPassword, user.password)) {
+        //add 1 case when forget old password
+        if (!user.password || bcrypt.compareSync(oldPassword, user.password) || oldPassword === user.password) {
             const result = await User.update(
                 {
                     password: bcrypt.hashSync(newPassword, 10),
@@ -298,4 +329,19 @@ export async function UnBlockUser(id: any) {
             id,
         }
     });
+}
+
+export async function activeUserAccount(id: any) {
+    try {
+        const result = await User.update({
+            active: true,
+        }, {
+            where: {
+                id,
+            }
+        })
+        return result;
+    } catch {
+        return null;
+    }
 }
