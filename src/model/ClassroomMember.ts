@@ -191,7 +191,45 @@ export async function getClassroomTeacherId(
         role: 2,
       },
     });
-    const result: any = classroomTeacher.toJSON().id;
+    const result: any = classroomTeacher?.toJSON().id;
+    return result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+export async function getClassroomMemberById(id: any): Promise<any> {
+  try {
+    let classroomMember: any = await ClassroomMember.findOne({
+      where: {
+        id,
+      },
+    });
+
+    let result: any = classroomMember?.toJSON();
+
+    return result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+
+export async function getClassroomMemberByUserId(
+  classroomId: any,
+  userId: any
+): Promise<any> {
+  try {
+    let classroomMember: any = await ClassroomMember.findOne({
+      where: {
+        classroomId,
+        userId,
+      },
+    });
+
+    let result: any = classroomMember?.toJSON();
+
     return result;
   } catch (e) {
     console.log(e);

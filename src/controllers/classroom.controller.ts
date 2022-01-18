@@ -15,6 +15,8 @@ import {
   checkValidMember,
   checkValidStudent,
   checkValidTeacher,
+  getClassroomMemberById,
+  getClassroomMemberByUserId,
   getClassroomTeacherId,
   getClassroomTeacherIds,
   getGradeBoardStudent,
@@ -26,6 +28,7 @@ import {
   createGradeStructure,
   deleteGradeStructure,
   getGradeStructureByClassroomId,
+  getGradeStructureById,
   markFinal,
   updateGradeStructure,
   updateGradeStructureOrder,
@@ -49,6 +52,10 @@ import {
   UpdateReviewIsComplete,
   UpdateReviewIsInProgress,
 } from "../model/GradeReview";
+import {
+  AddGradeReviewComment,
+  GetGradeReviewComments,
+} from "../model/GradeReviewConversation";
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
@@ -607,8 +614,6 @@ export async function getGradeReviews(req: Request, res: Response) {
       }
     }
 
-    console.log(result);
-
     return res.json(result);
   } catch (err: any) {
     return res.sendStatus(400);
@@ -668,6 +673,146 @@ export async function makeFinalDecisionForGradeReview(
       await UpdateGradeDetailIsCompleteReview(gradeReview.gradeDetailId);
     const result =
       isReviewComplete && isGradeUpdated && isGradeDetailCompletedReview;
+    return res.json(result);
+  } catch (err: any) {
+    return res.sendStatus(400);
+  }
+}
+
+export async function addGradeReviewComment(req: Request, res: Response) {
+  try {
+    const user = req.headers["userData"] as any;
+    const params: any = req.params;
+    let gradeDetail;
+    const classroomMember = await getClassroomMemberByUserId(
+      params.id,
+      user.id
+    );
+
+    if (classroomMember) {
+      if (classroomMember.role === 1) {
+        gradeDetail = await GetGradeDetailById(params.gradeDetailId);
+
+        if (gradeDetail.studentId !== user["student_id"]) {
+          return res.sendStatus(400);
+        }
+      } else {
+        const review = await GetReviewById(params.id, params.gradeDetailId);
+
+        if (review.teacherId !== classroomMember.id) {
+          return res.sendStatus(400);
+        }
+      }
+    } else {
+      return res.sendStatus(400);
+    }
+
+    const result = await AddGradeReviewComment(
+      params.id,
+      params.gradeDetailId,
+      classroomMember.id,
+      req.body.comment
+    );
+
+    return res.json(result);
+  } catch (err: any) {
+    return res.sendStatus(400);
+  }
+}
+
+export async function getGradeReviewConversation(req: Request, res: Response) {
+  try {
+    const user = req.headers["userData"] as any;
+    const params: any = req.params;
+    let gradeDetail = null;
+    let review = null;
+    const classroomMember = await getClassroomMemberByUserId(
+      params.id,
+      user.id
+    );
+
+    if (classroomMember) {
+      if (classroomMember.role === 1) {
+        gradeDetail = await GetGradeDetailById(params.gradeDetailId);
+
+        if (gradeDetail.studentId !== user["student_id"]) {
+          return res.sendStatus(400);
+        }
+      } else {
+        review = await GetReviewById(params.id, params.gradeDetailId);
+
+        if (review.teacherId !== classroomMember.id) {
+          return res.sendStatus(400);
+        }
+      }
+    } else {
+      return res.sendStatus(400);
+    }
+
+    if (!gradeDetail) {
+      gradeDetail = await GetGradeDetailById(params.gradeDetailId);
+    }
+
+    if (!review) {
+      review = await GetReviewById(params.id, params.gradeDetailId);
+    }
+
+    const gradeStructure = await getGradeStructureById(
+      gradeDetail.gradeStructureId
+    );
+
+    const comments = await GetGradeReviewComments(
+      params.id,
+      params.gradeDetailId
+    );
+    const commenterIdSet = new Set();
+
+    comments.forEach((comment: any) => {
+      commenterIdSet.add(comment.classroomMemberId);
+    });
+
+    const result = {
+      userRole: classroomMember.role,
+      information: {
+        compositionName: gradeStructure.name,
+        compositionStructure: gradeStructure.grade,
+        gradeDetailId: gradeDetail.id,
+        studentId: gradeDetail.studentId,
+        currentGrade: gradeDetail.grade,
+        expectationGrade: review.expectationGrade,
+        explanationMessage: review.explanationMessage,
+        isFinal: review.reviewState === 3,
+      },
+      comments: [] as any,
+      commenters: [] as any,
+    };
+
+    const commenters: any = [];
+
+    for (let id of commenterIdSet) {
+      const commenter = await getClassroomMemberById(id);
+      commenters.push(commenter);
+    }
+
+    for (let i = 0; i < comments.length; i++) {
+      for (let j = 0; j < commenters.length; j++) {
+        if (comments[i].classroomMemberId === commenters[j].id) {
+          comments[i]["commenterIndex"] = j;
+          break;
+        }
+      }
+
+      result.comments.push({
+        commenterIndex: comments[i].commenterIndex,
+        content: comments[i].comment,
+        date: comments[i].createdAt,
+      });
+    }
+
+    result.commenters = [
+      ...commenters.map((commenter: any) => commenter.classroomName),
+    ];
+
     return res.json(result);
   } catch (err: any) {
     return res.sendStatus(400);
