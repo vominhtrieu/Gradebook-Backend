@@ -118,6 +118,26 @@ export const resetPasswordHandler = async (req: Request, res: Response) => {
             const newPass = randomstring.generate({
                 length: 15
             });
+            const result = await updateUserPassword(userData[0].id, userData[0].password, newPass);
+            if (result.length > 0) {
+                transporter
+                    .sendMail({
+                        from: `Gradebook System <${process.env.EMAIL_ACCOUNT}>`,
+                        to: userData[0].email,
+                        subject: "Reset password",
+                        html: getResetPasswordMail(
+                            userData[0].name,
+                            newPass,
+                        ),
+                    })
+                    .then(() => {
+                        res.json("New password sent");
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.sendStatus(400);
+                    });
+            }
         } else {
             res.sendStatus(400);
         }
