@@ -1,4 +1,4 @@
-export default function (sender: string, invitationLink: string, role: string, classroomName: string) {
+export function getInvitationMail(sender: string, invitationLink: string, role: string, classroomName: string) {
     return `
     <div style="margin: 0; padding: 20px; width: 100%; background-color: #efefef">
         <table
@@ -160,3 +160,135 @@ export default function (sender: string, invitationLink: string, role: string, c
     </div>
     `;
 };
+
+export function getResetPasswordMail(sender: string, newPassword: string) {
+    return `
+    <div style="margin: 0; padding: 20px; width: 100%; background-color: #efefef">
+        <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            style="margin: 0 auto; padding: 0; table-layout: fixed"
+        >
+            <tr>
+            <td>
+                <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                    margin: 0 auto;
+                    padding: 0;
+                    table-layout: fixed;
+                    background-color: white;
+                "
+                >
+                <tbody>
+                    <tr
+                    style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        padding: 0;
+                        margin: 0;
+                    "
+                    >
+                    <td
+                        style="
+                        max-width: 500;
+                        width: 600px;
+                        border: 1px solid #e3e3e3;
+                        padding: 25px;
+                        "
+                    >
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%"
+                        >
+                        <tbody>
+                            <tr>
+                            <td>
+                                Hi <b><i>${sender}</b></i>
+                                We have provided you the new password below:
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%"
+                        >
+                        <tbody>
+                            <tr>
+                            <td style="text-align: center; height: 80px">
+                                <b>${newPassword}</b>
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%"
+                        >
+                        <tbody>
+                            <tr>
+                            <td style="text-align: center">
+                                Now you can sign in using the new password, <br />
+                                <b>remember to change to your own password after signing in.</b>
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%; margin-bottom: 20px"
+                        >
+                        <tbody>
+                            <tr>
+                            <td>
+                                Thank you,<br />
+                                Gradebook System Team
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+                <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                width="100%"
+                style="width: 100%; margin-bottom: 20px; margin-top: 10px"
+                >
+                <tbody>
+                    <tr>
+                    <td style="text-align: center; color: #808080">
+                        This is an automatic email.
+                        <br />
+                        Please don't reply to this email. <br />
+                        <br />
+                        <i>Gradebook System - 2021</i>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </td>
+            </tr>
+        </table>
+    </div>
+    `;
+}

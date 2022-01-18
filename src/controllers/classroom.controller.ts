@@ -20,7 +20,7 @@ import {
   getGradeBoardStudent,
   importClassroomMember,
 } from "../model/ClassroomMember";
-import getMailContent from "./mailContent";
+import {getInvitationMail} from "./mailContent";
 import { getUserById } from "../model/User";
 import {
   createGradeStructure,
@@ -224,7 +224,7 @@ export const sendInviteLinkHandler = async (req: Request, res: Response) => {
           from: `Gradebook System <${process.env.EMAIL_ACCOUNT}>`,
           to: req.body.email,
           subject: "Classroom invitation",
-          html: getMailContent(
+          html: getInvitationMail(
             userData.name,
             inviteLink,
             req.body.role,

@@ -1,6 +1,7 @@
 import { sequelize } from "./db";
 import bcrypt from "bcrypt";
 import Model, { DataTypes, Op } from "sequelize";
+import {Logger} from "sequelize/types/lib/utils/logger";
 
 export const User = sequelize.define(
     "user",
@@ -157,7 +158,7 @@ export async function getUsersByEmail(email: any): Promise<any> {
                 }
             },
         });
-        if (data == null) {
+        if (data == null || data.length === 0) {
             return null;
         }
         return JSON.parse(JSON.stringify(data));
@@ -238,7 +239,8 @@ export async function updateUserPassword(
             return null;
         }
         const user = <any>data.toJSON();
-        if (!user.password || bcrypt.compareSync(oldPassword, user.password)) {
+        //add 1 case when forget old password
+        if (!user.password || bcrypt.compareSync(oldPassword, user.password) || oldPassword === user.password) {
             const result = await User.update(
                 {
                     password: bcrypt.hashSync(newPassword, 10),
