@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import {
+    activeUserAccount,
+    getUserByActivationCode,
     getUsersByEmail,
     googleSignUserIn,
     registerUser,
@@ -7,7 +9,7 @@ import {
 } from "../model/User";
 import jwt from "jsonwebtoken";
 import randomstring from "randomstring";
-import { getResetPasswordMail } from "./mailContent";
+import { getActivationMail, getResetPasswordMail } from "./mailContent";
 import nodemailer from "nodemailer";
 
 let transporter = nodemailer.createTransport({
@@ -84,14 +86,30 @@ export const signUpHandler = async (req: Request, res: Response) => {
         const user = await registerUser(req.body);
         if (user !== null) {
             delete user.password;
-            res.json(user);
+            const activationLink = `${process.env.CLIENT_HOST}/activation/${user.activationCode}`
+            transporter
+                .sendMail({
+                    from: `Gradebook System <${process.env.EMAIL_ACCOUNT}>`,
+                    to: user.email,
+                    subject: "Account Activation",
+                    html: getActivationMail(
+                        user.name,
+                        activationLink,
+                    ),
+                })
+                .then(() => {
+                    res.json(user);
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(400);
+                });
             return;
         }
-        res.status(400).json("Email is registered!");
     } catch (err) {
         res.status(400).json(err);
     }
-};
+}
 
 export const resetPasswordHandler = async (req: Request, res: Response) => {
     try {
@@ -100,27 +118,25 @@ export const resetPasswordHandler = async (req: Request, res: Response) => {
             const newPass = randomstring.generate({
                 length: 15
             });
-            const result = await updateUserPassword(userData[0].id, userData[0].password, newPass);
-            if (result.length > 0) {
-                transporter
-                    .sendMail({
-                        from: `Gradebook System <${process.env.EMAIL_ACCOUNT}>`,
-                        to: req.body.email,
-                        subject: "Reset user password",
-                        html: getResetPasswordMail(
-                            userData[0].name,
-                            newPass,
-                        ),
-                    })
-                    .then(() => {
-                        res.status(200).json("Password has been sent");
-                    })
-                    .catch(err => {
-                        res.sendStatus(400);
-                    });
-            }
         } else {
-            res.status(400).json("Email has not been register");
+            res.sendStatus(400);
+        }
+    } catch (err) {
+        res.status(400).json(err);
+    }
+}
+
+export const activeAccountHandler = async (req: Request, res: Response) => {
+    try {
+        const user = await getUserByActivationCode(req.body.activationCode);
+        if (user !== null) {
+            const result = await activeUserAccount(user.id);
+            // @ts-ignore
+            if (result.length > 0) {
+                res.status(200).json("Account activated");
+            } else {
+                res.status(400).send("Can't activate");
+            }
         }
     } catch (err) {
         res.status(400).json(err);

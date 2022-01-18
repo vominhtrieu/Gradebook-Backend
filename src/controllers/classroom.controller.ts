@@ -317,15 +317,17 @@ export async function updateGradeStructuresOrderHandler(
         const user = req.headers["userData"] as any;
         const params: any = req.params;
         const ok = await checkValidTeacher(params.id, user.id);
+
         if (!ok) {
             return res.sendStatus(400);
         }
-        req.body.classroomId = req.params.id;
+        req.body.classroomId = parseInt(req.params.id);
         if (await updateGradeStructureOrder(req.body)) {
             return res.json("Success");
         }
         return res.sendStatus(500);
     } catch (err: any) {
+        console.log(err);
         return res.sendStatus(400);
     }
 }

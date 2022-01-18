@@ -1,7 +1,7 @@
 import { sequelize } from "./db";
 import bcrypt from "bcrypt";
 import Model, { DataTypes, Op } from "sequelize";
-import {Logger} from "sequelize/types/lib/utils/logger";
+import randomstring from "randomstring";
 
 export const User = sequelize.define(
     "user",
@@ -44,6 +44,13 @@ export const User = sequelize.define(
         external_id: {
             type: DataTypes.STRING,
         },
+        active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        activationCode: {
+            type: DataTypes.STRING
+        }
     },
     {underscored: true}
 );
@@ -57,6 +64,7 @@ export async function registerUser(user: any): Promise<any> {
             email: user.email.toLowerCase(),
             password: user.password,
             role: user.role ? user.role : 1,
+            activationCode: randomstring.generate({length: 20})
         });
         return result.toJSON();
     } catch (err) {
@@ -75,6 +83,10 @@ export async function signUserIn(
         },
     });
     if (data === null) {
+        return null;
+    }
+    // @ts-ignore
+    if (!data.active) {
         return null;
     }
     const user = <any>data.toJSON();
@@ -103,6 +115,7 @@ export async function googleSignUserIn(
                 email,
                 external_type: externalType,
                 external_id: externalId,
+                active: true
             });
             return result.toJSON();
         } catch (err) {
@@ -138,6 +151,22 @@ export async function getUserById(id: any): Promise<any> {
         const data = await User.findOne({
             where: {
                 id: id,
+            },
+        });
+        if (data == null) {
+            return null;
+        }
+        return data.toJSON();
+    } catch (e) {
+        return null;
+    }
+}
+
+export async function getUserByActivationCode(activateCode: any): Promise<any> {
+    try {
+        const data = await User.findOne({
+            where: {
+                activationCode: activateCode,
             },
         });
         if (data == null) {
@@ -300,4 +329,19 @@ export async function UnBlockUser(id: any) {
             id,
         }
     });
+}
+
+export async function activeUserAccount(id: any) {
+    try {
+        const result = await User.update({
+            active: true,
+        }, {
+            where: {
+                id,
+            }
+        })
+        return result;
+    } catch {
+        return null;
+    }
 }
