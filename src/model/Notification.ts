@@ -31,7 +31,9 @@ export const Notification = sequelize.define(
     {underscored: true}
 );
 
-export async function sendNotificationToUser(userId: number, title: string, content: string, href: string): Promise<any> {
+export async function sendNotificationToUser(userId: number, title: string, content: string, href: string, io: any): Promise<any> {
+    io.to(`u/${userId}`).emit("unreadNotification");
+    io.to(`u/${userId}`).emit("newNotification");
     return await Notification.create({
         userId,
         title,

@@ -70,6 +70,10 @@ app.use("/", authRouter);
 app.use(passport.authenticate("jwt", {session: false}))
 app.use((req: Request, res: Response, next: NextFunction) => {
     // @ts-ignore
+    if (req.user.blocked) {
+        return res.status(402).json("This account has been blocked");
+    }
+    // @ts-ignore
     req.headers["userData"] = req.user;
     next();
 });

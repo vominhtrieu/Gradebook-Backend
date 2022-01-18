@@ -13,7 +13,7 @@ export default (io: Server) => {
             process.env.TOKEN_SECRET as string,
             async (err: any, decoded: any) => {
                 if (err) {
-                    return
+                    next(err);
                 } else {
                     const user: any = await getUserById(decoded.id);
                     if (user) {

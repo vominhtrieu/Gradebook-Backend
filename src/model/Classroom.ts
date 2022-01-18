@@ -206,21 +206,8 @@ export async function getAllClassrooms(condition: any): Promise<any> {
                 },
             ],
         });
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i].toJSON();
-            let teachers = [];
-            for (let j = 0; j < item.classroom_members.length; j++) {
-                teachers.push(item.classroom_members[j].classroomName)
-            }
-            data[i] = {
-                id: item.id,
-                createdAt: item.createdAt.toLocaleDateString("vi"),
-                name: item.name,
-                description: item.description,
-                teachers: teachers
-            };
-        }
-        return data;
+
+        return getClassroomsData(data, 0);
     } catch (err) {
         return null;
     }
