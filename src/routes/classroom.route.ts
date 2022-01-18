@@ -24,6 +24,8 @@ import {
   getGradeReviews,
   makeFinalDecisionForGradeReview,
   acceptGradeReview,
+  getGradeReviewConversation,
+  addGradeReviewComment,
 } from "../controllers/classroom.controller";
 import multer from "multer";
 
@@ -76,6 +78,14 @@ router.post(
   makeFinalDecisionForGradeReview
 );
 
-// Review
+// Grade review conversation
+router.post(
+  "/:id/review/conversation/:gradeDetailId/add-comment",
+  addGradeReviewComment
+);
+router.get(
+  "/:id/review/conversation/:gradeDetailId",
+  getGradeReviewConversation
+);
 
 export default router;

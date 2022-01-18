@@ -1,6 +1,5 @@
 import { sequelize } from "./db";
 import { DataTypes } from "sequelize";
-import { GradeDetail } from "./GradeDetail";
 import { ClassroomMember } from "./ClassroomMember";
 import { GradeReview } from "./GradeReview";
 
@@ -59,6 +58,30 @@ export async function AddGradeReviewComment(
     });
     return true;
   } catch (e) {
+    console.log(e);
     return false;
+  }
+}
+
+export async function GetGradeReviewComments(
+  classroomId: any,
+  gradeDetailId: any
+): Promise<any> {
+  try {
+    const comments = await GradeReviewConversation.findAll({
+      where: {
+        classroomId,
+        gradeDetailId,
+      },
+      order: [["created_at", "asc"]],
+    });
+
+    let result: any = [];
+    comments.forEach(comment => {
+      result.push(comment.toJSON());
+    });
+    return result;
+  } catch (e) {
+    return [];
   }
 }
