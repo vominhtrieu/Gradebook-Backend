@@ -292,3 +292,119 @@ export function getResetPasswordMail(sender: string, newPassword: string) {
     </div>
     `;
 }
+
+export function getActivationMail(receiver: string, activationLink: string) {
+    return `
+    <div style="margin: 0; padding: 20px; width: 100%; background-color: #efefef">
+        <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            style="margin: 0 auto; padding: 0; table-layout: fixed"
+        >
+            <tr>
+            <td>
+                <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                    margin: 0 auto;
+                    padding: 0;
+                    table-layout: fixed;
+                    background-color: white;
+                "
+                >
+                <tbody>
+                    <tr
+                    style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        padding: 0;
+                        margin: 0;
+                    "
+                    >
+                    <td
+                        style="
+                        max-width: 500;
+                        width: 600px;
+                        border: 1px solid #e3e3e3;
+                        padding: 25px;
+                        "
+                    >
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%"
+                        >
+                        <tbody>
+                            <tr>
+                            <td>
+                                Hi <b><i>${receiver}</b></i>
+                                Thanks for joining our system. Follow the link below to activate your account.
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%"
+                        >
+                        <tbody>
+                            <tr>
+                            <td style="text-align: center; height: 80px">
+                                <a href="${activationLink}">${activationLink}</a>
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table
+                        border="0"
+                        cellpadding="0"
+                        cellspacing="0"
+                        width="100%"
+                        style="width: 100%; margin-bottom: 20px"
+                        >
+                        <tbody>
+                            <tr>
+                            <td>
+                                Thank you,<br />
+                                Gradebook System Team
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+                <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                width="100%"
+                style="width: 100%; margin-bottom: 20px; margin-top: 10px"
+                >
+                <tbody>
+                    <tr>
+                    <td style="text-align: center; color: #808080">
+                        This is an automatic email.
+                        <br />
+                        Please don't reply to this email. <br />
+                        <br />
+                        <i>Gradebook System - 2021</i>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </td>
+            </tr>
+        </table>
+    </div>
+    `;
+}
