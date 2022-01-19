@@ -86,10 +86,10 @@ export async function signUserIn(
         return null;
     }
     // @ts-ignore
-    if (!data.active) {
+    const user = <any>data.toJSON();
+    if (!user.active) {
         return null;
     }
-    const user = <any>data.toJSON();
     if (bcrypt.compareSync(password, user.password)) {
         return user;
     }

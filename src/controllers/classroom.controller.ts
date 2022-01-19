@@ -675,7 +675,7 @@ export async function makeFinalDecisionForGradeReview(
             req.body.finalGrade
         );
         const isGradeDetailCompletedReview =
-            await UpdateGradeDetailIsCompleteReview(gradeReview.gradeDetailId);
+            await UpdateGradeDetailIsCompleteReview(params.id, gradeReview.gradeDetailId, req.app.get("io"));
         const result =
             isReviewComplete && isGradeUpdated && isGradeDetailCompletedReview;
         return res.json(result);
