@@ -86,6 +86,7 @@ export const signUpHandler = async (req: Request, res: Response) => {
         const user = await registerUser(req.body);
         if (user !== null) {
             delete user.password;
+            console.log(user);
             const activationLink = `${process.env.CLIENT_HOST}/activation/${user.activationCode}`
             transporter
                 .sendMail({
