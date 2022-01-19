@@ -107,6 +107,7 @@ export const signUpHandler = async (req: Request, res: Response) => {
                 });
             return;
         }
+        res.status(400).json("Email is already registered");
     } catch (err) {
         res.status(400).json(err);
     }
