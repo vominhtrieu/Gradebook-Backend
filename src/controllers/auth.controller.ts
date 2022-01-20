@@ -33,6 +33,9 @@ export const signInHandler = async (req: Request, res: Response) => {
             if (user.blocked) {
                 return res.status(402).json("Blocked");
             }
+            if (!user.active) {
+                return res.status(403).json("You must active account first");
+            }
             return res.json({
                 studentId: user.student_id,
                 email: user.email,
